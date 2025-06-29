@@ -37,6 +37,31 @@ go test ./...
 ## Development Notes
 
 - Uses Echo v4 web framework for HTTP routing and middleware
+- DynamoDB integration with AWS SDK v2 for data persistence
+- Environment-based configuration for deployment flexibility
 - Standard Go project structure with go.mod for dependency management
-- No database or external services currently configured
-- No tests or additional middleware implemented yet
+
+## Database Setup
+
+- **Important**: DynamoDB table must be created before running the application
+- See [DYNAMODB_SETUP.md](./DYNAMODB_SETUP.md) for complete setup instructions
+- Required environment variables:
+  - `DYNAMODB_TABLE_NAME` (default: "todos")
+  - `AWS_REGION` (default: "us-east-1")
+  - `PORT` (default: "1323")
+
+## Local Development
+
+**Prerequisites:**
+- AWS CLI configured with appropriate credentials
+- DynamoDB table created (see DYNAMODB_SETUP.md)
+
+**Quick start:**
+```bash
+# Set environment variables
+export DYNAMODB_TABLE_NAME=todos
+export AWS_REGION=us-east-1
+
+# Run application
+go run main.go
+```
