@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Echo TODO API with SAM
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: provided.al2
+    Architectures:
+      - x86_64
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    Description: Environment name
+
+Resources:
+  # DynamoDB Table
+  TodoTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "todos-${Environment}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Lambda Function
+  EchoTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "echo-todo-api-${Environment}"
+      CodeUri: .
+      Handler: bootstrap
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref TodoTable
+          PORT: "8080"
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TodoTable
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowCredentials: false
+          AllowHeaders:
+            - "*"
+          AllowMethods:
+            - "*"
+          AllowOrigins:
+            - "*"
+          MaxAge: 86400
+    Metadata:
+      BuildMethod: go1.x
+
+Outputs:
+  EchoTodoApi:
+    Description: "Function URL for Echo TODO API"
+    Value: !GetAtt EchoTodoFunctionUrl.FunctionUrl
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionUrl"
+  
+  DynamoDBTable:
+    Description: "DynamoDB Table Name"
+    Value: !Ref TodoTable
+    Export:
+      Name: !Sub "${AWS::StackName}-TableName"
