@@ -21,6 +21,16 @@ func NewTodoHandler(todoService services.TodoService) *TodoHandler {
 }
 
 // CreateTodo creates a new todo
+// @Summary Create a new TODO
+// @Description Create a new TODO item
+// @Tags todos
+// @Accept json
+// @Produce json
+// @Param todo body models.CreateTodoRequest true "Create TODO request"
+// @Success 201 {object} utils.Response{data=models.Todo} "Successfully created"
+// @Failure 400 {object} utils.Response "Bad request"
+// @Failure 500 {object} utils.Response "Internal server error"
+// @Router /api/v1/todos [post]
 func (h *TodoHandler) CreateTodo(c echo.Context) error {
 	var req models.CreateTodoRequest
 	
@@ -44,6 +54,16 @@ func (h *TodoHandler) CreateTodo(c echo.Context) error {
 }
 
 // GetTodo retrieves a todo by ID
+// @Summary Get a TODO by ID
+// @Description Get a specific TODO item by ID
+// @Tags todos
+// @Produce json
+// @Param id path string true "TODO ID"
+// @Success 200 {object} utils.Response{data=models.Todo} "Successfully retrieved"
+// @Failure 400 {object} utils.Response "Bad request"
+// @Failure 404 {object} utils.Response "TODO not found"
+// @Failure 500 {object} utils.Response "Internal server error"
+// @Router /api/v1/todos/{id} [get]
 func (h *TodoHandler) GetTodo(c echo.Context) error {
 	// Get ID from URL parameter
 	id := c.Param("id")
@@ -66,6 +86,13 @@ func (h *TodoHandler) GetTodo(c echo.Context) error {
 }
 
 // GetAllTodos retrieves all todos
+// @Summary Get all TODOs
+// @Description Get all TODO items
+// @Tags todos
+// @Produce json
+// @Success 200 {object} utils.Response{data=[]models.Todo} "Successfully retrieved"
+// @Failure 500 {object} utils.Response "Internal server error"
+// @Router /api/v1/todos [get]
 func (h *TodoHandler) GetAllTodos(c echo.Context) error {
 
 	todos,err := h.todoService.GetAllTodos(c.Request().Context())
@@ -77,6 +104,18 @@ func (h *TodoHandler) GetAllTodos(c echo.Context) error {
 }
 
 // UpdateTodo updates an existing todo
+// @Summary Update a TODO
+// @Description Update an existing TODO item
+// @Tags todos
+// @Accept json
+// @Produce json
+// @Param id path string true "TODO ID"
+// @Param todo body models.UpdateTodoRequest true "Update TODO request"
+// @Success 200 {object} utils.Response{data=models.Todo} "Successfully updated"
+// @Failure 400 {object} utils.Response "Bad request"
+// @Failure 404 {object} utils.Response "TODO not found"
+// @Failure 500 {object} utils.Response "Internal server error"
+// @Router /api/v1/todos/{id} [put]
 func (h *TodoHandler) UpdateTodo(c echo.Context) error {
 	// Get ID from URL parameter
 	id := c.Param("id")
@@ -111,6 +150,16 @@ func (h *TodoHandler) UpdateTodo(c echo.Context) error {
 }
 
 // DeleteTodo deletes a todo by ID
+// @Summary Delete a TODO
+// @Description Delete a TODO item by ID
+// @Tags todos
+// @Produce json
+// @Param id path string true "TODO ID"
+// @Success 200 {object} utils.Response "Successfully deleted"
+// @Failure 400 {object} utils.Response "Bad request"
+// @Failure 404 {object} utils.Response "TODO not found"
+// @Failure 500 {object} utils.Response "Internal server error"
+// @Router /api/v1/todos/{id} [delete]
 func (h *TodoHandler) DeleteTodo(c echo.Context) error {
 	// Get ID from URL parameter
 	id := c.Param("id")
