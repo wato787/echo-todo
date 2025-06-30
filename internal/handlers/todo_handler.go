@@ -6,6 +6,8 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"echo-todo/internal/services"
+	"echo-todo/pkg/models"
+	"echo-todo/pkg/utils"
 )
 
 type TodoHandler struct {
@@ -20,8 +22,25 @@ func NewTodoHandler(todoService services.TodoService) *TodoHandler {
 
 // CreateTodo creates a new todo
 func (h *TodoHandler) CreateTodo(c echo.Context) error {
-	// TODO: Implement create todo logic
-	return c.JSON(http.StatusCreated, map[string]string{"message": "TODO: Implement CreateTodo"})
+	var req models.CreateTodoRequest
+	
+	// Bind request body
+	if err := c.Bind(&req); err != nil {
+		return utils.ValidationErrorResponse(c, "Invalid request format")
+	}
+	
+	// Validate request
+	if err := utils.ValidateStruct(&req); err != nil {
+		return utils.ValidationErrorResponse(c, err.Error())
+	}
+	
+	// Create todo via service
+	todo, err := h.todoService.CreateTodo(c.Request().Context(), &req)
+	if err != nil {
+		return utils.InternalErrorResponse(c, "Failed to create todo")
+	}
+	
+	return utils.SuccessResponse(c, http.StatusCreated, "Todo created successfully", todo)
 }
 
 // GetTodo retrieves a todo by ID

@@ -2,6 +2,9 @@ package services
 
 import (
 	"context"
+	"time"
+
+	"github.com/google/uuid"
 
 	"echo-todo/internal/repository"
 	"echo-todo/pkg/models"
@@ -26,8 +29,26 @@ func NewTodoService(todoRepo repository.TodoRepository) TodoService {
 }
 
 func (s *todoService) CreateTodo(ctx context.Context, req *models.CreateTodoRequest) (*models.Todo, error) {
-	// TODO: Implement business logic for creating todo
-	return nil, nil
+	// Generate unique ID
+	id := generateID()
+	
+	// Create todo entity with timestamps
+	todo := &models.Todo{
+		ID:          id,
+		Title:       req.Title,
+		Description: req.Description,
+		Completed:   false,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+	
+	// Save to repository
+	err := s.todoRepo.Create(ctx, todo)
+	if err != nil {
+		return nil, err
+	}
+	
+	return todo, nil
 }
 
 func (s *todoService) GetTodoByID(ctx context.Context, id string) (*models.Todo, error) {
@@ -48,4 +69,9 @@ func (s *todoService) UpdateTodo(ctx context.Context, id string, req *models.Upd
 func (s *todoService) DeleteTodo(ctx context.Context, id string) error {
 	// TODO: Implement business logic for deleting todo
 	return nil
+}
+
+func generateID() string {
+	// Generate UUID v4 for unique ID
+	return uuid.New().String()
 }
