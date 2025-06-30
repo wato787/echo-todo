@@ -23,3 +23,4 @@ type UpdateTodoRequest struct {
 	Description *string `json:"description,omitempty"`
 	Completed   *bool   `json:"completed,omitempty"`
 }
+

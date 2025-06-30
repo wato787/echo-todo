@@ -51,8 +51,13 @@ func (h *TodoHandler) GetTodo(c echo.Context) error {
 
 // GetAllTodos retrieves all todos
 func (h *TodoHandler) GetAllTodos(c echo.Context) error {
-	// TODO: Implement get all todos logic
-	return c.JSON(http.StatusOK, map[string]string{"message": "TODO: Implement GetAllTodos"})
+
+	todos,err := h.todoService.GetAllTodos(c.Request().Context())
+	if err != nil {
+		return utils.InternalErrorResponse(c,"faild")
+	}
+
+	return utils.SuccessResponse(c,http.StatusOK,"OK",todos)
 }
 
 // UpdateTodo updates an existing todo

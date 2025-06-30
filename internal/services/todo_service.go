@@ -57,8 +57,11 @@ func (s *todoService) GetTodoByID(ctx context.Context, id string) (*models.Todo,
 }
 
 func (s *todoService) GetAllTodos(ctx context.Context) ([]models.Todo, error) {
-	// TODO: Implement business logic for getting all todos
-	return nil, nil
+	todos,err := s.todoRepo.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return todos, nil
 }
 
 func (s *todoService) UpdateTodo(ctx context.Context, id string, req *models.UpdateTodoRequest) (*models.Todo, error) {
