@@ -57,7 +57,17 @@ aws lambda create-function-url-config \
     --auth-type NONE \
     --region $REGION
 
-# Step 5: Get Function URL
+# Step 5: Add public access permission
+echo "🔓 Adding public access permission..."
+aws lambda add-permission \
+    --function-name $FUNCTION_NAME \
+    --statement-id AllowPublicInvoke \
+    --action lambda:InvokeFunctionUrl \
+    --principal "*" \
+    --function-url-auth-type NONE \
+    --region $REGION
+
+# Step 6: Get Function URL
 echo "📋 Function URL:"
 FUNCTION_URL=$(aws lambda get-function-url-config \
     --function-name $FUNCTION_NAME \
