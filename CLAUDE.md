@@ -10,12 +10,12 @@ This is a simple Go web server built with the Echo framework. The project is cur
 
 **Run the application:**
 ```bash
-go run main.go
+go run cmd/server/main.go
 ```
 
 **Build the application:**
 ```bash
-go build -o echo-todo
+go build -o bin/server cmd/server/main.go
 ```
 
 **Install/update dependencies:**
@@ -30,9 +30,21 @@ go test ./...
 
 ## Architecture
 
-- **main.go**: Entry point containing the Echo server setup and a single GET route handler
-- **go.mod**: Module definition with Echo v4 framework dependency
-- The server runs on port 1323 and currently serves a single endpoint at "/"
+This project follows Go best practices with a layered architecture:
+
+- **cmd/server/**: Application entry point
+- **internal/**: Private application code
+  - **handlers/**: HTTP request handlers (controllers)
+  - **services/**: Business logic layer
+  - **repository/**: Data access layer
+  - **config/**: Configuration management
+  - **middleware/**: Custom middleware
+- **pkg/**: Reusable library code
+  - **models/**: Data models and structures
+  - **utils/**: Utility functions
+- **docs/**: Project documentation
+
+For detailed folder structure, see [docs/FOLDER_STRUCTURE.md](./docs/FOLDER_STRUCTURE.md)
 
 ## Development Notes
 
@@ -63,5 +75,5 @@ export DYNAMODB_TABLE_NAME=todos
 export AWS_REGION=us-east-1
 
 # Run application
-go run main.go
+go run cmd/server/main.go
 ```
