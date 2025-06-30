@@ -45,8 +45,24 @@ func (h *TodoHandler) CreateTodo(c echo.Context) error {
 
 // GetTodo retrieves a todo by ID
 func (h *TodoHandler) GetTodo(c echo.Context) error {
-	// TODO: Implement get todo logic
-	return c.JSON(http.StatusOK, map[string]string{"message": "TODO: Implement GetTodo"})
+	// Get ID from URL parameter
+	id := c.Param("id")
+	if id == "" {
+		return utils.ValidationErrorResponse(c, "ID is required")
+	}
+	
+	// Get todo via service
+	todo, err := h.todoService.GetTodoByID(c.Request().Context(), id)
+	if err != nil {
+		return utils.InternalErrorResponse(c, "Failed to get todo")
+	}
+	
+	// Check if todo was found
+	if todo == nil {
+		return utils.NotFoundResponse(c, "Todo not found")
+	}
+	
+	return utils.SuccessResponse(c, http.StatusOK, "Todo retrieved successfully", todo)
 }
 
 // GetAllTodos retrieves all todos
@@ -62,12 +78,55 @@ func (h *TodoHandler) GetAllTodos(c echo.Context) error {
 
 // UpdateTodo updates an existing todo
 func (h *TodoHandler) UpdateTodo(c echo.Context) error {
-	// TODO: Implement update todo logic
-	return c.JSON(http.StatusOK, map[string]string{"message": "TODO: Implement UpdateTodo"})
+	// Get ID from URL parameter
+	id := c.Param("id")
+	if id == "" {
+		return utils.ValidationErrorResponse(c, "ID is required")
+	}
+	
+	var req models.UpdateTodoRequest
+	
+	// Bind request body
+	if err := c.Bind(&req); err != nil {
+		return utils.ValidationErrorResponse(c, "Invalid request format")
+	}
+	
+	// Validate that at least one field is provided
+	if req.Title == nil && req.Description == nil && req.Completed == nil {
+		return utils.ValidationErrorResponse(c, "At least one field must be provided for update")
+	}
+	
+	// Update todo via service
+	todo, err := h.todoService.UpdateTodo(c.Request().Context(), id, &req)
+	if err != nil {
+		return utils.InternalErrorResponse(c, "Failed to update todo")
+	}
+	
+	// Check if todo was found
+	if todo == nil {
+		return utils.NotFoundResponse(c, "Todo not found")
+	}
+	
+	return utils.SuccessResponse(c, http.StatusOK, "Todo updated successfully", todo)
 }
 
 // DeleteTodo deletes a todo by ID
 func (h *TodoHandler) DeleteTodo(c echo.Context) error {
-	// TODO: Implement delete todo logic
-	return c.JSON(http.StatusOK, map[string]string{"message": "TODO: Implement DeleteTodo"})
+	// Get ID from URL parameter
+	id := c.Param("id")
+	if id == "" {
+		return utils.ValidationErrorResponse(c, "ID is required")
+	}
+	
+	// Delete todo via service
+	err := h.todoService.DeleteTodo(c.Request().Context(), id)
+	if err != nil {
+		// Check for specific error types
+		if err.Error() == "todo not found" {
+			return utils.NotFoundResponse(c, "Todo not found")
+		}
+		return utils.InternalErrorResponse(c, "Failed to delete todo")
+	}
+	
+	return utils.SuccessResponse(c, http.StatusOK, "Todo deleted successfully", nil)
 }
