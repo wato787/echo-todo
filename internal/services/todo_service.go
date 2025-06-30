@@ -2,8 +2,9 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 
 	"echo-todo/internal/repository"
 	"echo-todo/pkg/models"
@@ -71,6 +72,6 @@ func (s *todoService) DeleteTodo(ctx context.Context, id string) error {
 }
 
 func generateID() string {
-	// Simple ID generation using timestamp
-	return fmt.Sprintf("todo_%d", time.Now().UnixNano())
+	// Generate UUID v4 for unique ID
+	return uuid.New().String()
 }
