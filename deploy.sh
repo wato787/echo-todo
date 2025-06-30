@@ -26,7 +26,7 @@ echo ""
 
 # Step 1: Build for Lambda
 echo "🔨 Building for Lambda (Linux)..."
-GOOS=linux GOARCH=amd64 go build -o $BINARY_NAME cmd/server/main.go
+GOOS=linux GOARCH=amd64 go build -o $BINARY_NAME cmd/lambda/main.go
 echo "✅ Lambda build complete: $BINARY_NAME"
 
 # Step 2: Create ZIP
